@@ -3,11 +3,14 @@
 # Build and Run Docker Containers Script
 # This script builds and starts the Docker containers using docker-compose
 
-# Color codes for pretty output
+# Color codes
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Function to print status messages
 print_status() {
@@ -19,31 +22,27 @@ print_status() {
     fi
 }
 
-# Check if we're in the correct directory (where docker-compose.yml exists)
-PROJECT_DIR="legacy-start-pub"  # Should match the CLONE_DIR from setup_env.sh
-
-if [ ! -f "$PROJECT_DIR/docker-compose.yml" ]; then
-    echo -e "${RED}[ERROR]${NC} docker-compose.yml not found in $PROJECT_DIR!"
-    echo -e "${YELLOW}[INFO]${NC} Please ensure you're in the correct directory or run setup_env.sh first"
+# 1. Verify docker-compose.yml exists
+COMPOSE_FILE="$SCRIPT_DIR/docker-compose.yml"
+if [ ! -f "$COMPOSE_FILE" ]; then
+    echo -e "${RED}[ERROR]${NC} docker-compose.yml not found at $COMPOSE_FILE!"
+    echo -e "${YELLOW}[INFO]${NC} Current directory contents:"
+    ls -la
     exit 1
 fi
 
-# Navigate to project directory
-cd "$PROJECT_DIR" || exit 1
-
-# 1. Build Docker containers
-echo -e "${YELLOW}[INFO]${NC} Building Docker containers (this may take a while)..."
-docker-compose build
+# 2. Build Docker containers
+echo -e "${YELLOW}[INFO]${NC} Building Docker containers..."
+docker-compose -f "$COMPOSE_FILE" build
 print_status "Docker containers built successfully" $?
 
-# 2. Start Docker containers in detached mode
+# 3. Start containers
 echo -e "${YELLOW}[INFO]${NC} Starting Docker containers..."
-docker-compose up -d
+docker-compose -f "$COMPOSE_FILE" up -d
 print_status "Docker containers started successfully" $?
 
-# 3. Show running containers
-echo -e "${YELLOW}[INFO]${NC} Current container status:"
-docker-compose ps
+# 4. Show status
+echo -e "${YELLOW}[INFO]${NC} Container status:"
+docker-compose -f "$COMPOSE_FILE" ps
 
-echo -e "${GREEN}[DEPLOYMENT COMPLETE]${NC} Application is running in detached mode!"
-echo -e "${YELLOW}[TIP]${NC} Use 'docker-compose logs' to view application logs"
+echo -e "${GREEN}[DEPLOYMENT COMPLETE]${NC}"
