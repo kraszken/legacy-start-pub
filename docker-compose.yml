@@ -7,11 +7,13 @@ services:
       - "HOSTNAME=Polish ET Legacy Public"
     volumes:
       - ./maps:/maps
+      - ./move-config.sh:/move-config.sh
     ports:
       - "27960:27960/udp"
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
       - "com.centurylinklabs.watchtower.lifecycle.pre-update=/legacy/server/autorestart"
+    entrypoint: ["/bin/bash", "/move-config.sh"]
     stdin_open: true
     tty: true
     restart: unless-stopped
