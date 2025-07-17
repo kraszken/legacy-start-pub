@@ -20,7 +20,7 @@ print_status() {
 }
 
 # Check if we're in the correct directory (where docker-compose.yml exists)
-PROJECT_DIR="etlegacy"  # Should match the CLONE_DIR from setup_env.sh
+PROJECT_DIR="legacy-start-pub"  # Should match the CLONE_DIR from setup_env.sh
 
 if [ ! -f "$PROJECT_DIR/docker-compose.yml" ]; then
     echo -e "${RED}[ERROR]${NC} docker-compose.yml not found in $PROJECT_DIR!"
