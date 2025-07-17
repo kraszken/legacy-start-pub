@@ -1,6 +1,6 @@
-# Legacy Start Pub Server
+# ET:Legacy Public Server setup
 
-This guide explains how to set up and run the Legacy Start Pub server.
+This guide explains how to set up and run the ET:Legacy Public Server using Docker.
 
 ## Setup Instructions
 
@@ -28,26 +28,57 @@ This guide explains how to set up and run the Legacy Start Pub server.
    ```
 
 4. **Copy the .env File**  
-   Copy the `.env` file into the `legacy-start-pub` directory with the required configuration settings.
+   Copy the `.env` file into the `legacy-start-pub` directory with required settings (e.g., `RCONPASSWORD`, `WATCHTOWER_API_TOKEN`).
 
 5. **Add Maps**  
    Place your map files in the `maps` directory within `legacy-start-pub`.
 
 6. **Run Setup and Server Scripts**  
-   Execute the following command to set up the environment and start the server:
+   Execute the following command to set up the environment, build and start the server, and configure automatic restarts:
 
    ```bash
    bash setup_env.sh && bash run_server.sh
    ```
 
+   Alternatively, use Docker Compose to start the server manually:
+
+   ```bash
+   docker-compose up -d
+   ```
+
 7. **Server is Running**  
-   The server is now active. Check the terminal for connection details or the server URL.
+   The server is now active on port 27960 (UDP). Check the terminal or `docker logs etl-public` for connection details.
+
+## Automatic Restarts
+
+The `run_server.sh` script sets up a cron job to run `autorestart.sh` every 4 hours, which stops the server if 2 or fewer players are connected. The `restart: unless-stopped` policy in `docker-compose.yml` restarts the server automatically.
+
+- **Verify the Cron Job**:
+  ```bash
+  crontab -l
+  ```
+  You should see:
+  ```
+  0 */4 * * * docker exec etl-public /legacy/server/autorestart
+  ```
+- **Check Restart Logs**:
+  ```bash
+  docker logs etl-public
+  ```
 
 ## Notes
 
-- Ensure `setup_env.sh` and `run_server.sh` have executable permissions:
+- Ensure `setup_env.sh`, `run_server.sh`, and `/legacy/server/autorestart` have executable permissions:
   ```bash
   chmod +x setup_env.sh run_server.sh
+  docker exec etl-public chmod +x /legacy/server/autorestart
   ```
-- Verify the `.env` file and `maps` directory are correctly set up.
-- Check terminal output for any errors during setup or server startup.
+- Ensure the user running `run_server.sh` is in the `docker` group:
+  ```bash
+  sudo usermod -aG docker $USER
+  ```
+  Log out and back in to apply.
+- Verify the `.env` file includes `RCONPASSWORD` and `WATCHTOWER_API_TOKEN`, and the `maps` directory is set up.
+- The `autorestart.sh` script stops the server only if 2 or fewer players are connected, preventing disruption to active games. The container restarts automatically due to the `restart: unless-stopped` policy.
+- Watchtower integration runs `autorestart.sh` before updating the container, ensuring updates occur when player count is low.
+- Check `docker logs etl-public` for errors or to confirm automatic restarts.

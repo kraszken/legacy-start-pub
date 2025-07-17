@@ -2,6 +2,7 @@
 
 # Build and Run Docker Containers Script
 # This script builds and starts the Docker containers using docker compose
+# and sets up a cron job for automatic restarts every 4 hours
 
 # Color codes
 GREEN='\033[0;32m'
@@ -46,7 +47,13 @@ echo -e "${YELLOW}[INFO]${NC} Starting Docker containers..."
 docker compose -f "$COMPOSE_FILE" up -d
 print_status "Docker containers started successfully" $?
 
-# 4. Show status
+# 4. Set up cron job for automatic restarts
+echo -e "${YELLOW}[INFO]${NC} Setting up cron job for automatic restarts every 4 hours..."
+CRON_JOB="0 */4 * * * docker exec etl-public /legacy/server/autorestart"
+(crontab -l 2>/dev/null | grep -v "/legacy/server/autorestart"; echo "$CRON_JOB") | crontab -
+print_status "Cron job for automatic restarts added successfully" $?
+
+# 5. Show status
 echo -e "${YELLOW}[INFO]${NC} Container status:"
 docker compose -f "$COMPOSE_FILE" ps
 
