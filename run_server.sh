@@ -33,7 +33,12 @@ fi
 
 # 2. Build Docker containers
 echo -e "${YELLOW}[INFO]${NC} Building Docker containers..."
-docker-compose -f "$COMPOSE_FILE" build
+if ! docker-compose -f "$COMPOSE_FILE" build; then
+    echo -e "${RED}[CRITICAL ERROR]${NC} Build failed with exit code $?"
+    echo -e "${YELLOW}[TROUBLESHOOTING]${NC} Try running manually:"
+    echo -e "  docker-compose -f $COMPOSE_FILE build --no-cache --progress plain"
+    exit 1
+fi
 print_status "Docker containers built successfully" $?
 
 # 3. Start containers
