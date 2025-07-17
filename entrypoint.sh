@@ -2,7 +2,7 @@
 
 # Base directories
 GAME_BASE="/legacy/server"
-SETTINGS_BASE="${GAME_BASE}/settings"
+SETTINGS_BASE="${GAME_BASE}/etmain"
 ETMAIN_DIR="${GAME_BASE}/etmain"
 LEGACY_DIR="${GAME_BASE}/legacy"
 HOMEPATH="/legacy/homepath"
