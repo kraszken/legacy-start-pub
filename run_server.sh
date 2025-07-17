@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Build and Run Docker Containers Script
-# This script builds and starts the Docker containers using docker-compose
+# This script builds and starts the Docker containers using docker compose
 
 # Color codes
 GREEN='\033[0;32m'
@@ -33,21 +33,21 @@ fi
 
 # 2. Build Docker containers
 echo -e "${YELLOW}[INFO]${NC} Building Docker containers..."
-if ! docker-compose -f "$COMPOSE_FILE" build; then
+if ! docker compose -f "$COMPOSE_FILE" build; then
     echo -e "${RED}[CRITICAL ERROR]${NC} Build failed with exit code $?"
     echo -e "${YELLOW}[TROUBLESHOOTING]${NC} Try running manually:"
-    echo -e "  docker-compose -f $COMPOSE_FILE build --no-cache --progress plain"
+    echo -e "  docker compose -f $COMPOSE_FILE build --no-cache --progress plain"
     exit 1
 fi
 print_status "Docker containers built successfully" $?
 
 # 3. Start containers
 echo -e "${YELLOW}[INFO]${NC} Starting Docker containers..."
-docker-compose -f "$COMPOSE_FILE" up -d
+docker compose -f "$COMPOSE_FILE" up -d
 print_status "Docker containers started successfully" $?
 
 # 4. Show status
 echo -e "${YELLOW}[INFO]${NC} Container status:"
-docker-compose -f "$COMPOSE_FILE" ps
+docker compose -f "$COMPOSE_FILE" ps
 
 echo -e "${GREEN}[DEPLOYMENT COMPLETE]${NC}"
