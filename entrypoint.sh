@@ -177,16 +177,7 @@ copy_game_assets() {
     # Handle configs
     rm -rf "${ETMAIN_DIR}/configs/"
     ensure_directory "${ETMAIN_DIR}/configs/"
-    cp "${SETTINGS_BASE}/configs/"*.config "${ETMAIN_DIR}/configs/" 2>/dev/null || true
-
-    local objectivecycle_src="${SETTINGS_BASE}/objectivecycle.cfg"
-    local objectivecycle_dest="${ETMAIN_DIR}/objectivecycle.cfg"
-    if [ -f "$objectivecycle_src" ]; then
-        log_info "Copying objectivecycle.cfg to ${ETMAIN_DIR}"
-        cp -f "$objectivecycle_src" "$objectivecycle_dest"
-    else
-        log_warning "objectivecycle.cfg not found in ${SETTINGS_BASE}"
-    fi
+    cp "${SETTINGS_BASE}/configs/"*.{config,cfg} "${ETMAIN_DIR}/configs/" 2>/dev/null || true
 }
 
 # Update server.cfg with CONF vars
