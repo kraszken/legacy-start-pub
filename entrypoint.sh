@@ -329,10 +329,6 @@ exec "${GAME_BASE}/etlded" \
     +set fs_homepath "/legacy/homepath" \
     +set sv_tracker "${CONF[SVTRACKER]}" \
     +exec "etl_server.cfg" \
-    +set g_gametype 4 \
-    +set g_campaignfile "scripts/polishcamp.campaign" \
-    +map supply \
-    +set nextcampaign "campaign polish_campaign" \
     +map "${CONF[STARTMAP]}" \
     "${ADDITIONAL_ARGS[@]}" \
     "$@"
