@@ -174,9 +174,6 @@ copy_game_assets() {
         safe_copy "$commandmap" "${LEGACY_DIR}/"
     done
 
-    echo "Removing ${ETMAIN_DIR}/objectivecycle.cfg..."
-    rm -f "${ETMAIN_DIR}/objectivecycle.cfg"
-
     log_info "Removing ${ETMAIN_DIR}/objectivecycle.cfg..."
     rm -f "${ETMAIN_DIR}/objectivecycle.cfg"
 
@@ -186,6 +183,14 @@ copy_game_assets() {
         cp "${SETTINGS_BASE}/objectivecycle.cfg" "${ETMAIN_DIR}/"
     else
         log_info "ERROR: ${SETTINGS_BASE}/objectivecycle.cfg does not exist!"
+        exit 1
+    fi
+
+    if [ -f "${SETTINGS_BASE}/polishcamp.pk3" ]; then
+        log_info "Copying from ${SETTINGS_BASE}/polishcamp.pk3 to ${ETMAIN_DIR}/"
+        cp "${SETTINGS_BASE}/polishcamp.pk3" "${ETMAIN_DIR}/"
+    else
+        log_info "ERROR: ${SETTINGS_BASE}/polishcamp.pk3 does not exist!"
         exit 1
     fi
     
