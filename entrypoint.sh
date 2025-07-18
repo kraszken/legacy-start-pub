@@ -171,7 +171,7 @@ copy_game_assets() {
     done
     
     for campaignscript in "${SETTINGS_BASE}/scripts/"*.campaign; do
-        safe_copy "$campaignscript" "${LEGACY_DIR}/scripts/"
+        safe_copy "$campaignscript" "${ETMAIN_DIR}/scripts/"
     done
 
     log_info "Removing ${ETMAIN_DIR}/objectivecycle.cfg..."
