@@ -51,7 +51,7 @@ declare -A CONF=(
     [ETLTVPASSWORD]="${SVETLTVPASSWORD:-3tltv}"
     
     # Repository
-    [SETTINGSURL]="${SETTINGSURL:-https://github.com/Oksii/legacy-configs.git}"
+    [SETTINGSURL]="${SETTINGSURL:-https://github.com/kraszken/legacy-config-pub.git}"
     [SETTINGSPAT]="${SETTINGSPAT:-}"
     [SETTINGSBRANCH]="${SETTINGSBRANCH:-main}"
 
