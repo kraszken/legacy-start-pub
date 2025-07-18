@@ -173,11 +173,15 @@ copy_game_assets() {
     for commandmap in "${SETTINGS_BASE}/commandmaps/"*.pk3; do
         safe_copy "$commandmap" "${LEGACY_DIR}/"
     done
+
+    rm -f "${ETMAIN_DIR}/objectivecycle.cfg"
+
+    cp "${SETTINGS_BASE}/objectivecycle.cfg" "${ETMAIN_DIR}/"
     
     # Handle configs
     rm -rf "${ETMAIN_DIR}/configs/"
     ensure_directory "${ETMAIN_DIR}/configs/"
-    cp "${SETTINGS_BASE}/configs/"*.{config,cfg} "${ETMAIN_DIR}/configs/" 2>/dev/null || true
+    cp "${SETTINGS_BASE}/configs/"*.config "${ETMAIN_DIR}/configs/" 2>/dev/null || true
 }
 
 # Update server.cfg with CONF vars
