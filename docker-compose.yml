@@ -1,19 +1,22 @@
 services:
   etl-stable:
     container_name: etl-public
-    image: oksii/etlegacy:stable
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        STATIC_URL_AMD64: https://www.etlegacy.com/workflow-files/dl/1b0dc6667b1d2908ab1ffe908ab8ac702b58d6d8/lnxx8664/etlegacy-v2.83.2-171-g1b0dc66-x86_64.tar.gz
+        STATIC_URL_ARM64: https://www.etlegacy.com/workflow-files/dl/1b0dc6667b1d2908ab1ffe908ab8ac702b58d6d8/lnxarm64/etlegacy-v2.83.2-171-g1b0dc66-aarch64.tar.gz
     env_file: .env
     environment:
       - "HOSTNAME=Polish ET Legacy Public"
     volumes:
       - ./maps:/maps
-      - ./move-config.sh:/move-config.sh
     ports:
       - "27960:27960/udp"
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
       - "com.centurylinklabs.watchtower.lifecycle.pre-update=/legacy/server/autorestart"
-    entrypoint: ["/bin/bash", "/move-config.sh"]
     stdin_open: true
     tty: true
     restart: unless-stopped
