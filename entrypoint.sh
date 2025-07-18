@@ -177,12 +177,15 @@ copy_game_assets() {
     echo "Removing ${ETMAIN_DIR}/objectivecycle.cfg..."
     rm -f "${ETMAIN_DIR}/objectivecycle.cfg"
 
-    # Double-check the source exists
+    log_info "Removing ${ETMAIN_DIR}/objectivecycle.cfg..."
+    rm -f "${ETMAIN_DIR}/objectivecycle.cfg"
+
+    # Check if the source file exists and copy it
     if [ -f "${SETTINGS_BASE}/objectivecycle.cfg" ]; then
-        echo "Copying from ${SETTINGS_BASE}/objectivecycle.cfg to ${ETMAIN_DIR}/"
+        log_info "Copying from ${SETTINGS_BASE}/objectivecycle.cfg to ${ETMAIN_DIR}/"
         cp "${SETTINGS_BASE}/objectivecycle.cfg" "${ETMAIN_DIR}/"
     else
-        echo "ERROR: ${SETTINGS_BASE}/objectivecycle.cfg does not exist!"
+        log_info "ERROR: ${SETTINGS_BASE}/objectivecycle.cfg does not exist!"
         exit 1
     fi
     
