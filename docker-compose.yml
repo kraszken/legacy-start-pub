@@ -1,7 +1,12 @@
 services:
   etl-stable:
     container_name: etl-public
-    image: oksii/etlegacy:stable
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        STATIC_URL_AMD64: ${STATIC_URL_AMD64}
+        STATIC_URL_ARM64: ${STATIC_URL_ARM64}
     env_file: .env
     environment:
       - "HOSTNAME=Polish ET Legacy Public"
