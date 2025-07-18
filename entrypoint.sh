@@ -170,8 +170,8 @@ copy_game_assets() {
         safe_copy "$tomlfile" "${LEGACY_DIR}/luascripts/"
     done
     
-    for commandmap in "${SETTINGS_BASE}/commandmaps/"*.pk3; do
-        safe_copy "$commandmap" "${LEGACY_DIR}/"
+    for campaignscript in "${SETTINGS_BASE}/scripts/"*.campaign; do
+        safe_copy "$campaignscript" "${LEGACY_DIR}/"
     done
 
     log_info "Removing ${ETMAIN_DIR}/objectivecycle.cfg..."
