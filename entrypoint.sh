@@ -186,11 +186,11 @@ copy_game_assets() {
         exit 1
     fi
 
-    if [ -f "${SETTINGS_BASE}/polishcamp.pk3" ]; then
-        log_info "Copying from ${SETTINGS_BASE}/polishcamp.pk3 to ${ETMAIN_DIR}/"
-        cp "${SETTINGS_BASE}/polishcamp.pk3" "${ETMAIN_DIR}/"
+    if [ -f "${SETTINGS_BASE}/zz_polishcamp.pk3" ]; then
+        log_info "Copying from ${SETTINGS_BASE}/zz_polishcamp.pk3 to ${ETMAIN_DIR}/"
+        cp "${SETTINGS_BASE}/zz_polishcamp.pk3" "${ETMAIN_DIR}/"
     else
-        log_info "ERROR: ${SETTINGS_BASE}/polishcamp.pk3 does not exist!"
+        log_info "ERROR: ${SETTINGS_BASE}/zz_polishcamp.pk3 does not exist!"
         exit 1
     fi
     
