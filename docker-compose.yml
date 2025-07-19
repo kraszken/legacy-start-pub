@@ -7,6 +7,7 @@ services:
       args:
         STATIC_URL_AMD64: ${STATIC_URL_AMD64}
         STATIC_URL_ARM64: ${STATIC_URL_ARM64}
+        SETTINGSURL: ${SETTINGSURL}
     env_file: .env
     environment:
       - "HOSTNAME=Polish ET Legacy Public"
