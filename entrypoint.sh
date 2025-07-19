@@ -174,17 +174,17 @@ copy_game_assets() {
         safe_copy "$campaignscript" "${ETMAIN_DIR}/scripts/"
     done
 
-    log_info "Removing ${ETMAIN_DIR}/objectivecycle.cfg..."
-    rm -f "${ETMAIN_DIR}/objectivecycle.cfg"
+    # log_info "Removing ${ETMAIN_DIR}/objectivecycle.cfg..."
+    # rm -f "${ETMAIN_DIR}/objectivecycle.cfg"
 
     # Check if the source file exists and copy it
-    if [ -f "${SETTINGS_BASE}/objectivecycle.cfg" ]; then
-        log_info "Copying from ${SETTINGS_BASE}/objectivecycle.cfg to ${ETMAIN_DIR}/"
-        cp "${SETTINGS_BASE}/objectivecycle.cfg" "${ETMAIN_DIR}/"
-    else
-        log_info "ERROR: ${SETTINGS_BASE}/objectivecycle.cfg does not exist!"
-        exit 1
-    fi
+    # if [ -f "${SETTINGS_BASE}/objectivecycle.cfg" ]; then
+    #     log_info "Copying from ${SETTINGS_BASE}/objectivecycle.cfg to ${ETMAIN_DIR}/"
+    #     cp "${SETTINGS_BASE}/objectivecycle.cfg" "${ETMAIN_DIR}/"
+    # else
+    #     log_info "ERROR: ${SETTINGS_BASE}/objectivecycle.cfg does not exist!"
+    #     exit 1
+    # fi
 
     if [ -f "${SETTINGS_BASE}/zz_polishcamp.pk3" ]; then
         log_info "Copying from ${SETTINGS_BASE}/zz_polishcamp.pk3 to ${ETMAIN_DIR}/"
