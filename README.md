@@ -2,7 +2,7 @@
 
 This guide explains how to set up and run the ET:Legacy Public Server using Docker.
 
-## Setup Instructions
+## Setup Instructions (First run)
 
 1. **Install Git**  
    Install Git using your package manager. For Debian/Ubuntu-based systems, run:
@@ -28,7 +28,7 @@ This guide explains how to set up and run the ET:Legacy Public Server using Dock
    ```
 
 4. **Copy the .env File**  
-   Copy the `.env` file into the `legacy-start-pub` directory with required settings (e.g., `RCONPASSWORD`).
+   Copy the `.env` file into the `legacy-start-pub` directory with required settings.
 
 5. **Add Maps**  
    Place your map files in the `maps` directory within `legacy-start-pub`.
@@ -40,18 +40,31 @@ This guide explains how to set up and run the ET:Legacy Public Server using Dock
    bash setup_env.sh && bash run_server.sh
    ```
 
-   Alternatively, use Docker Compose to start the server manually:
+7. **Server is Running**  
+   The server is now active on port 27960 (UDP). Check the terminal or `docker logs etl-public` for connection details.
+
+## Update Instructions
+
+1. **Navigate to the Directory**  
+   Enter the project directory:
 
    ```bash
-   docker-compose up -d
+   cd legacy-start-pub
    ```
 
-7. **Server is Running**  
+2. **Run Server Scripts**  
+   Execute the following command to build and start the server, and configure automatic restarts:
+
+   ```bash
+   bash run_server.sh
+   ```
+
+3. **Server is Running**  
    The server is now active on port 27960 (UDP). Check the terminal or `docker logs etl-public` for connection details.
 
 ## Automatic Restarts
 
-The `run_server.sh` script sets up a cron job to run `autorestart.sh` every 4 hours, which stops the server if 2 or fewer players are connected. The `restart: unless-stopped` policy in `docker-compose.yml` restarts the server automatically.
+The `run_server.sh` script sets up a cron job to run `autorestart.sh` every 1 hour, which stops the server if 2 or fewer players are connected. The `restart: unless-stopped` policy in `docker-compose.yml` restarts the server automatically.
 
 - **Verify the Cron Job**:
   ```bash
@@ -59,7 +72,7 @@ The `run_server.sh` script sets up a cron job to run `autorestart.sh` every 4 ho
   ```
   You should see:
   ```
-  0 */4 * * * docker exec etl-public /legacy/server/autorestart
+  0 */1 * * * docker exec etl-public /legacy/server/autorestart
   ```
 - **Check Restart Logs**:
   ```bash
@@ -78,6 +91,6 @@ The `run_server.sh` script sets up a cron job to run `autorestart.sh` every 4 ho
   sudo usermod -aG docker $USER
   ```
   Log out and back in to apply.
-- Verify the `.env` file includes `RCONPASSWORD` and the `maps` directory is set up.
+- Verify the `.env` file includes all needed settings and the `maps` directory is set up.
 - The `autorestart.sh` script stops the server only if 2 or fewer players are connected, preventing disruption to active games. The container restarts automatically due to the `restart: unless-stopped` policy.
 - Check `docker logs etl-public` for errors or to confirm automatic restarts.
