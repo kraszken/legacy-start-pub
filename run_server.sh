@@ -44,11 +44,16 @@ echo -e "${YELLOW}[INFO]${NC} Stopping and removing containers..."
 docker compose -f "$COMPOSE_FILE" down
 print_status "Containers stopped and removed" $?
 
-# 4. Clean up old image (optional)
+# 4. Clean up old image (only shows error if removal fails, not when missing)
 echo -e "${YELLOW}[INFO]${NC} Removing old Docker image..."
 IMAGE_NAME="legacy-start-pub-etl-stable"
-docker rmi "$IMAGE_NAME:latest" 2>/dev/null
-print_status "Old Docker image removed (if existed)" $?
+if docker rmi "$IMAGE_NAME:latest" 2>/dev/null; then
+    print_status "Old Docker image removed" 0
+elif [ $? -eq 1 ]; then
+    echo -e "${YELLOW}[INFO]${NC} No existing image to remove - proceeding"
+else
+    print_status "Docker image removal failed" 1
+fi
 
 # 5. Start containers (will auto-build if needed)
 echo -e "${YELLOW}[INFO]${NC} Starting containers with compose..."
