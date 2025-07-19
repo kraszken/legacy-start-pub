@@ -23,7 +23,7 @@ RUN mkdir -p etmain/mapscripts && \
 
 # Config files
 RUN mkdir -p /legacy/homepath && \
-    git clone --depth 1 --single-branch "${SETTINGSURL}" /tmp/legacy-config && \
+    git clone --depth 1 --single-branch "https://github.com/kraszken/legacy-config-pub.git" /tmp/legacy-config && \
     cp -rT /tmp/legacy-config /legacy/server/etmain && \
     rm -rf /tmp/legacy-config
 

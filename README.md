@@ -28,7 +28,7 @@ This guide explains how to set up and run the ET:Legacy Public Server using Dock
    ```
 
 4. **Copy the .env File**  
-   Copy the `.env` file into the `legacy-start-pub` directory with required settings (e.g., `RCONPASSWORD`, `WATCHTOWER_API_TOKEN`).
+   Copy the `.env` file into the `legacy-start-pub` directory with required settings (e.g., `RCONPASSWORD`).
 
 5. **Add Maps**  
    Place your map files in the `maps` directory within `legacy-start-pub`.
@@ -78,7 +78,6 @@ The `run_server.sh` script sets up a cron job to run `autorestart.sh` every 4 ho
   sudo usermod -aG docker $USER
   ```
   Log out and back in to apply.
-- Verify the `.env` file includes `RCONPASSWORD` and `WATCHTOWER_API_TOKEN`, and the `maps` directory is set up.
+- Verify the `.env` file includes `RCONPASSWORD` and the `maps` directory is set up.
 - The `autorestart.sh` script stops the server only if 2 or fewer players are connected, preventing disruption to active games. The container restarts automatically due to the `restart: unless-stopped` policy.
-- Watchtower integration runs `autorestart.sh` before updating the container, ensuring updates occur when player count is low.
 - Check `docker logs etl-public` for errors or to confirm automatic restarts.
