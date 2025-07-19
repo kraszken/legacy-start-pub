@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Build and Run Docker Containers Script
-# This script builds and starts the Docker containers using docker compose
-# and sets up a cron job for automatic restarts every 4 hours
+# Update and Restart Docker Containers Script
+# Handles code updates and container restarts without explicit building
 
 # Color codes
 GREEN='\033[0;32m'
@@ -19,7 +18,7 @@ print_status() {
         echo -e "${GREEN}[SUCCESS]${NC} $1"
     else
         echo -e "${RED}[ERROR]${NC} $1" >&2
-        exit 1
+        return 1
     fi
 }
 
@@ -32,29 +31,52 @@ if [ ! -f "$COMPOSE_FILE" ]; then
     exit 1
 fi
 
-# 2. Build Docker containers
-echo -e "${YELLOW}[INFO]${NC} Building Docker containers..."
-if ! docker compose -f "$COMPOSE_FILE" build; then
-    echo -e "${RED}[CRITICAL ERROR]${NC} Build failed with exit code $?"
-    echo -e "${YELLOW}[TROUBLESHOOTING]${NC} Try running manually:"
-    echo -e "  docker compose -f $COMPOSE_FILE build --no-cache --progress plain"
+# 2. Update source code
+echo -e "${YELLOW}[INFO]${NC} Updating source code..."
+if git -C "$SCRIPT_DIR" pull; then
+    print_status "Code updated successfully" 0
+else
+    print_status "Git pull failed - continuing with existing code" 0
+fi
+
+# 3. Stop and remove containers
+echo -e "${YELLOW}[INFO]${NC} Stopping and removing containers..."
+docker compose -f "$COMPOSE_FILE" down
+print_status "Containers stopped and removed" $?
+
+# 4. Clean up old image (optional)
+echo -e "${YELLOW}[INFO]${NC} Removing old Docker image..."
+IMAGE_NAME="legacy-start-pub-etl-stable"
+docker rmi "$IMAGE_NAME:latest" 2>/dev/null
+print_status "Old Docker image removed (if existed)" $?
+
+# 5. Start containers (will auto-build if needed)
+echo -e "${YELLOW}[INFO]${NC} Starting containers with compose..."
+docker compose -f "$COMPOSE_FILE" up -d
+print_status "Containers started successfully" $?
+
+# 6. Set up cron job for automatic restarts
+echo -e "${YELLOW}[INFO]${NC} Setting up cron job for automatic restarts every 1 hour..."
+CRON_JOB="0 */1 * * * docker exec etl-public /legacy/server/autorestart"
+
+# Create temporary cron file
+TMP_CRON=$(mktemp)
+crontab -l 2>/dev/null | grep -v "/legacy/server/autorestart" > "$TMP_CRON"
+echo "$CRON_JOB" >> "$TMP_CRON"
+
+if crontab "$TMP_CRON"; then
+    print_status "Cron job for automatic restarts added successfully" 0
+    rm -f "$TMP_CRON"
+else
+    print_status "Failed to update cron jobs" 1
+    rm -f "$TMP_CRON"
     exit 1
 fi
-print_status "Docker containers built successfully" $?
 
-# 3. Start containers
-echo -e "${YELLOW}[INFO]${NC} Starting Docker containers..."
-docker compose -f "$COMPOSE_FILE" up -d
-print_status "Docker containers started successfully" $?
-
-# 4. Set up cron job for automatic restarts
-echo -e "${YELLOW}[INFO]${NC} Setting up cron job for automatic restarts every 4 hours..."
-CRON_JOB="0 */4 * * * docker exec etl-public /legacy/server/autorestart"
-(crontab -l 2>/dev/null | grep -v "/legacy/server/autorestart"; echo "$CRON_JOB") | crontab -
-print_status "Cron job for automatic restarts added successfully" $?
-
-# 5. Show status
+# 7. Show status and final message
 echo -e "${YELLOW}[INFO]${NC} Container status:"
 docker compose -f "$COMPOSE_FILE" ps
 
-echo -e "${GREEN}[DEPLOYMENT COMPLETE]${NC}"
+echo -e "${GREEN}[UPDATE COMPLETE]${NC}"
+echo -e "Services should now be running with the latest code"
+echo -e "Autorestart checks scheduled every 1 hour"
