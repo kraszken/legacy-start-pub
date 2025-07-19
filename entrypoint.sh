@@ -36,7 +36,6 @@ declare -A CONF=(
     [STARTMAP]="${STARTMAP:-radar}"
     [TIMEOUTLIMIT]="${TIMEOUTLIMIT:-1}"
     [SERVERCONF]="${SERVERCONF:-legacy6}"
-    [SVTRACKER]="${SVTRACKER:-}"
     [MOTD]="${CONF_MOTD:-}"
 
     # Passwords
@@ -55,51 +54,11 @@ declare -A CONF=(
     [SETTINGSPAT]="${SETTINGSPAT:-}"
     [SETTINGSBRANCH]="${SETTINGSBRANCH:-main}"
 
-    # Stats API settings
-    [STATS_SUBMIT]="${STATS_SUBMIT:-false}"
-    [STATS_API_LOG]="${STATS_API_LOG:-false}"
-    [STATS_API_TOKEN]="${STATS_API_TOKEN:-}"
-    [STATS_API_PATH]="${STATS_API_PATH:-/legacy/homepath/legacy/stats/}"
-    [STATS_API_URL_SUBMIT]="${STATS_API_URL_SUBMIT:-}"
-    [STATS_API_URL_MATCHID]="${STATS_API_URL_MATCHID:-}"
-    [STATS_API_OBITUARIES]="${STATS_API_OBITUARIES:-true}"
-    [STATS_API_MESSAGELOG]="${STATS_API_MESSAGELOG:-true}"
-    [STATS_API_DAMAGESTAT]="${STATS_API_DAMAGESTAT:-true}"
-    [STATS_API_SHOVESTATS]="${STATS_API_SHOVESTATS:-true}"
-    [STATS_API_OBJSTATS]="${STATS_API_OBJSTATS:-true}"
-    [STATS_API_DUMPJSON]="${STATS_API_DUMPJSON:-false}"
-    [STATS_API_MOVEMENTSTATS]="${STATS_API_MOVEMENTSTATS:-true}"
-    [STATS_API_STANCESTATS]="${STATS_API_STANCESTATS:-true}"
-    [STATS_API_ALTMAPSCRIPTS]="${STATS_API_ALTMAPSCRIPTS:-false}"
-    [STATS_API_FORCERENAME]="${STATS_API_FORCERENAME:-false}"
 
     # extra assets settings
     [ASSETS]="${ASSETS:-false}"
     [ASSETS_URL]="${ASSETS_URL:-}"
-
-    # Tracker API settings
-    [TRACKER]="${TRACKER:-false}"
-    [TRACKER_API_ENDPOINT]="${TRACKER_API_ENDPOINT:-}"
-    [TRACKER_API_TOKEN]="${TRACKER_API_TOKEN:-}"
-    [TRACKER_DEBUG]="${TRACKER_DEBUG:-false}"
 )
-
-
-# Enable/Disable STATS_API. Use a separate branch rather than edit every *.config file 
-STATS_ENABLED=false
-if [ "${CONF[STATS_SUBMIT]}" = "true" ]; then
-    STATS_ENABLED=true
-    # Set branch if using default branch
-    if [ "${CONF[SETTINGSBRANCH]}" = "main" ]; then
-        CONF[SETTINGSBRANCH]="etl-stats-api"
-    fi
-fi
-
-# Enable/Disable TRACKER
-TRACKER_ENABLED=false
-if [ "${CONF[TRACKER]}" = "true" ]; then
-    TRACKER_ENABLED=true
-fi
 
 # Fetch configs from repo
 update_configs() {
@@ -174,18 +133,6 @@ copy_game_assets() {
         safe_copy "$campaignscript" "${ETMAIN_DIR}/scripts/"
     done
 
-    # log_info "Removing ${ETMAIN_DIR}/objectivecycle.cfg..."
-    # rm -f "${ETMAIN_DIR}/objectivecycle.cfg"
-
-    # Check if the source file exists and copy it
-    # if [ -f "${SETTINGS_BASE}/objectivecycle.cfg" ]; then
-    #     log_info "Copying from ${SETTINGS_BASE}/objectivecycle.cfg to ${ETMAIN_DIR}/"
-    #     cp "${SETTINGS_BASE}/objectivecycle.cfg" "${ETMAIN_DIR}/"
-    # else
-    #     log_info "ERROR: ${SETTINGS_BASE}/objectivecycle.cfg does not exist!"
-    #     exit 1
-    # fi
-
     if [ -f "${SETTINGS_BASE}/zz_polishcamp.pk3" ]; then
         log_info "Copying from ${SETTINGS_BASE}/zz_polishcamp.pk3 to ${ETMAIN_DIR}/"
         cp "${SETTINGS_BASE}/zz_polishcamp.pk3" "${ETMAIN_DIR}/"
@@ -255,47 +202,7 @@ handle_extra_content() {
         { log_warning "Failed to download assets"; return 1; }
 }
 
-# Update the config.toml for obj-track and game-stats-web.lua
-configure_stats_api() {
-    local config_file="${LEGACY_DIR}/luascripts/config.toml"
-    
-    # set docker_config true
-    sed -i 's/docker_config = false/docker_config = true/' "$config_file"
 
-    [ -f "$config_file" ] && {
-        sed -i \
-            -e "s/%CONF_STATS_API_TOKEN%/${CONF[STATS_API_TOKEN]}/g" \
-            -e "s|%CONF_STATS_API_URL_SUBMIT%|${CONF[STATS_API_URL_SUBMIT]}|g" \
-            -e "s|%CONF_STATS_API_URL_MATCHID%|${CONF[STATS_API_URL_MATCHID]}|g" \
-            -e "s|%CONF_STATS_API_PATH%|${CONF[STATS_API_PATH]}|g" \
-            -e 's/"%CONF_STATS_API_LOG%"/'${CONF[STATS_API_LOG]}'/g' \
-            -e 's/"%CONF_STATS_API_OBITUARIES%"/'${CONF[STATS_API_OBITUARIES]}'/g' \
-            -e 's/"%CONF_STATS_API_MESSAGELOG%"/'${CONF[STATS_API_MESSAGELOG]}'/g' \
-            -e 's/"%CONF_STATS_API_DAMAGESTAT%"/'${CONF[STATS_API_DAMAGESTAT]}'/g' \
-            -e 's/"%CONF_STATS_API_OBJSTATS%"/'${CONF[STATS_API_OBJSTATS]}'/g' \
-            -e 's/"%CONF_STATS_API_DUMPJSON%"/'${CONF[STATS_API_DUMPJSON]}'/g' \
-            -e 's/"%CONF_STATS_API_SHOVESTATS%"/'${CONF[STATS_API_SHOVESTATS]}'/g' \
-            -e 's/"%CONF_STATS_API_MOVEMENTSTATS%"/'${CONF[STATS_API_MOVEMENTSTATS]}'/g' \
-            -e 's/"%CONF_STATS_API_STANCESTATS%"/'${CONF[STATS_API_STANCESTATS]}'/g' \
-            -e 's/"%CONF_STATS_API_ALTMAPSCRIPTS%"/'${CONF[STATS_API_ALTMAPSCRIPTS]}'/g' \
-            -e 's/"%CONF_STATS_API_FORCERENAME%"/'${CONF[STATS_API_FORCERENAME]}'/g' \
-            "$config_file"
-    }
-}
-
-# Update the tracker.lua configuration
-configure_tracker_api() {
-    local tracker_file="${LEGACY_DIR}/luascripts/tracker.lua"
-    
-    [ -f "$tracker_file" ] && {
-        sed -i \
-            -e "s|%CONF_TRACKER_API_ENDPOINT%|${CONF[TRACKER_API_ENDPOINT]}|g" \
-            -e "s|%CONF_TRACKER_API_TOKEN%|${CONF[TRACKER_API_TOKEN]}|g" \
-            -e 's/"%CONF_TRACKER_DEBUG%"/'${CONF[TRACKER_DEBUG]}'/g' \
-            -e 's/%CONF_TRACKER_DEBUG%/'${CONF[TRACKER_DEBUG]}'/g' \
-            "$tracker_file"
-    }
-}
 
 # Parse additional CLI arguments
 parse_cli_args() {
@@ -316,8 +223,6 @@ download_maps
 copy_game_assets
 update_server_config
 handle_extra_content
-$STATS_ENABLED && configure_stats_api
-$TRACKER_ENABLED && configure_tracker_api
 
 ADDITIONAL_ARGS=($(parse_cli_args))
 
@@ -327,7 +232,6 @@ exec "${GAME_BASE}/etlded" \
     +set net_port "${CONF[MAP_PORT]}" \
     +set fs_basepath "${GAME_BASE}" \
     +set fs_homepath "/legacy/homepath" \
-    +set sv_tracker "${CONF[SVTRACKER]}" \
     +exec "etl_server.cfg" \
     +map "${CONF[STARTMAP]}" \
     "${ADDITIONAL_ARGS[@]}" \
