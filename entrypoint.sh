@@ -133,19 +133,34 @@ copy_game_assets() {
         safe_copy "$campaignscript" "${ETMAIN_DIR}/scripts/"
     done
 
+    # Handle zz_polishcamp.pk3
     if [ -f "${SETTINGS_BASE}/zz_polishcamp.pk3" ]; then
-        log_info "Copying from ${SETTINGS_BASE}/zz_polishcamp.pk3 to ${ETMAIN_DIR}/"
+        log_info "Copying from ${SETTINGS_BASE}/zz_polishcamp.pk3 to ${ETMAIN_DIR}/ and ${LEGACY_DIR}/"
         cp "${SETTINGS_BASE}/zz_polishcamp.pk3" "${ETMAIN_DIR}/"
         cp "${SETTINGS_BASE}/zz_polishcamp.pk3" "${LEGACY_DIR}/"
     else
         log_info "ERROR: ${SETTINGS_BASE}/zz_polishcamp.pk3 does not exist!"
         exit 1
     fi
-    
+
     # Handle configs
-    rm -rf "${ETMAIN_DIR}/configs/"
-    ensure_directory "${ETMAIN_DIR}/configs/"
-    cp "${SETTINGS_BASE}/configs/"*.config "${ETMAIN_DIR}/configs/" 2>/dev/null || true
+    if compgen -G "${SETTINGS_BASE}/configs/*.config" > /dev/null; then
+        log_info "Copying config files to ${ETMAIN_DIR}/configs/"
+        rm -rf "${ETMAIN_DIR}/configs/"
+        ensure_directory "${ETMAIN_DIR}/configs/"
+        cp "${SETTINGS_BASE}/configs/"*.config "${ETMAIN_DIR}/configs/"
+    else
+        log_info "WARNING: No config files found in ${SETTINGS_BASE}/configs/"
+    fi
+
+    # Handle wolfadmin.toml
+    if [ -f "${SETTINGS_BASE}/wolfadmin.toml" ]; then
+        log_info "Copying wolfadmin.toml to ${LEGACY_DIR}/"
+        cp "${SETTINGS_BASE}/wolfadmin.toml" "${LEGACY_DIR}/"
+    else
+        log_info "WARNING: ${SETTINGS_BASE}/wolfadmin.toml not found!"
+    fi
+
 }
 
 # Update server.cfg with CONF vars
