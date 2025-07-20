@@ -12,7 +12,7 @@ services:
       - "HOSTNAME=^7Pol^1ish ET ^7Legacy Public"
     volumes:
       - ./maps:/maps
-      - ./homepath:/legacy/homepath
+      - ./homepath:/legacy/homepath:rw
     ports:
       - "27960:27960/udp"
     stdin_open: true

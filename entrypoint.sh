@@ -7,6 +7,9 @@ ETMAIN_DIR="${GAME_BASE}/etmain"
 LEGACY_DIR="${GAME_BASE}/legacy"
 HOMEPATH="/legacy/homepath"
 
+mkdir -p /legacy/homepath/legacy
+chown -R legacy:legacy /legacy/homepath
+
 # Helper functions for common operations
 log_info() {
     echo "$1"
