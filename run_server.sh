@@ -60,9 +60,9 @@ echo -e "${YELLOW}[INFO]${NC} Starting containers with compose..."
 docker compose -f "$COMPOSE_FILE" up -d
 print_status "Containers started successfully" $?
 
-# 6. Set up cron job for automatic restarts
-echo -e "${YELLOW}[INFO]${NC} Setting up cron job for automatic restarts every 1 hour..."
-CRON_JOB="0 */1 * * * docker exec etl-public /legacy/server/autorestart"
+# 6. Set up cron job for automatic restarts (changed to daily at 03:00 AM)
+echo -e "${YELLOW}[INFO]${NC} Setting up cron job for automatic restarts daily at 03:00 AM..."
+CRON_JOB="0 3 * * * docker exec etl-public /legacy/server/autorestart"
 
 # Create temporary cron file
 TMP_CRON=$(mktemp)
@@ -84,4 +84,4 @@ docker compose -f "$COMPOSE_FILE" ps
 
 echo -e "${GREEN}[UPDATE COMPLETE]${NC}"
 echo -e "Services should now be running with the latest code"
-echo -e "Autorestart checks scheduled every 1 hour"
+echo -e "Autorestart checks scheduled daily at 03:00 AM"

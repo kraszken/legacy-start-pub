@@ -41,7 +41,7 @@ This guide explains how to set up and run the ET:Legacy Public Server using Dock
    ```
 
 7. **Server is Running**  
-   The server is now active on port 27960 (UDP). Check the terminal or `docker logs etl-public` for connection details.
+   The server is now active on port 27962 (UDP). Check the terminal or `docker logs etl-public` for connection details.
 
 ## Update Instructions
 
@@ -60,7 +60,7 @@ This guide explains how to set up and run the ET:Legacy Public Server using Dock
    ```
 
 3. **Server is Running**  
-   The server is now active on port 27960 (UDP). Check the terminal or `docker logs etl-public` for connection details.
+   The server is now active on port 27962 (UDP). Check the terminal or `docker logs etl-public` for connection details.
 
 ## Automatic Restarts
 
