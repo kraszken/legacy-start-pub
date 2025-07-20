@@ -158,7 +158,7 @@ copy_game_assets() {
 
     # Handle all .toml files with verbose logging
     shopt -s nullglob  # Enable nullglob to handle empty cases
-    toml_files=("${SETTINGS_BASE}/"*.toml)
+    toml_files=("${SETTINGS_BASE}/tomlfiles/"*.toml)
 
     if (( ${#toml_files[@]} )); then
         log_info "Found ${#toml_files[@]} .toml file(s) in ${SETTINGS_BASE}/:"
