@@ -156,13 +156,25 @@ copy_game_assets() {
         log_info "WARNING: No config files found in ${SETTINGS_BASE}/configs/"
     fi
 
-    # Handle wolfadmin.toml
-    if [ -f "${SETTINGS_BASE}/wolfadmin.toml" ]; then
-        log_info "Copying wolfadmin.toml to ${LEGACY_DIR}/"
-        cp "${SETTINGS_BASE}/wolfadmin.toml" "${LEGACY_DIR}/"
+    # Handle all .toml files with verbose logging
+    shopt -s nullglob  # Enable nullglob to handle empty cases
+    toml_files=("${SETTINGS_BASE}/"*.toml)
+
+    if (( ${#toml_files[@]} )); then
+        log_info "Found ${#toml_files[@]} .toml file(s) in ${SETTINGS_BASE}/:"
+        for file in "${toml_files[@]}"; do
+            filename=$(basename "$file")
+            log_info " - ${filename}"
+        done
+        
+        log_info "Copying to ${LEGACY_DIR}/"
+        cp -v "${toml_files[@]}" "${LEGACY_DIR}/" | while read -r line; do
+            log_info " ${line}"
+        done
     else
-        log_info "WARNING: ${SETTINGS_BASE}/wolfadmin.toml not found!"
+        log_info "WARNING: No .toml files found in ${SETTINGS_BASE}/"
     fi
+    shopt -u nullglob  # Disable nullglob
 
 }
 
