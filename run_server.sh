@@ -57,8 +57,12 @@ fi
 
 # 5. Start containers (will auto-build if needed)
 echo -e "${YELLOW}[INFO]${NC} Starting containers with compose..."
-docker compose -f "$COMPOSE_FILE" up -d
-print_status "Containers started successfully" $?
+if docker compose -f "$COMPOSE_FILE" up -d; then
+    print_status "Containers started successfully" 0
+else
+    print_status "Failed to start containers" 1
+    exit 1
+fi
 
 # 6. Set up cron job for automatic restarts (changed to daily at 03:00 AM)
 echo -e "${YELLOW}[INFO]${NC} Setting up cron job for automatic restarts daily at 03:00 AM..."
