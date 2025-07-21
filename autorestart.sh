@@ -25,7 +25,7 @@ fi
 
 # Check if player count is less than or equal to 9
 if [ "$player_count" -le 9 ]; then
-    echo "2 or fewer players are active. Proceeding with update."
+    echo "9 or fewer players are active. Proceeding with update."
     # Issue the RCON command to quit the server using the found port
     timeout 5 icecon "localhost:$active_port" "${RCONPASSWORD}" -c "quit"
     exit_code=$?

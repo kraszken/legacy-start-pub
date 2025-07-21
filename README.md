@@ -64,7 +64,7 @@ This guide explains how to set up and run the ET:Legacy Public Server using Dock
 
 ## Automatic Restarts
 
-The `run_server.sh` script sets up a cron job to run `autorestart.sh` every 1 hour, which stops the server if 2 or fewer players are connected. The `restart: unless-stopped` policy in `docker-compose.yml` restarts the server automatically.
+The `run_server.sh` script sets up a cron job to run `autorestart.sh` every day at 3am, which stops the server if 9 or fewer players are connected. The `restart: unless-stopped` policy in `docker-compose.yml` restarts the server automatically.
 
 - **Verify the Cron Job**:
   ```bash
@@ -72,7 +72,7 @@ The `run_server.sh` script sets up a cron job to run `autorestart.sh` every 1 ho
   ```
   You should see:
   ```
-  0 */1 * * * docker exec etl-public /legacy/server/autorestart
+  0 3 * * * docker exec etl-public /legacy/server/autorestart
   ```
 - **Check Restart Logs**:
   ```bash
@@ -92,5 +92,5 @@ The `run_server.sh` script sets up a cron job to run `autorestart.sh` every 1 ho
   ```
   Log out and back in to apply.
 - Verify the `.env` file includes all needed settings and the `maps` directory is set up.
-- The `autorestart.sh` script stops the server only if 2 or fewer players are connected, preventing disruption to active games. The container restarts automatically due to the `restart: unless-stopped` policy.
+- The `autorestart.sh` script stops the server only if 9 or fewer players are connected, preventing disruption to active games. The container restarts automatically due to the `restart: unless-stopped` policy.
 - Check `docker logs etl-public` for errors or to confirm automatic restarts.
