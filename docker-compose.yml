@@ -9,7 +9,7 @@ services:
         STATIC_URL_ARM64: ${STATIC_URL_ARM64}
     env_file: .env
     environment:
-      - "HOSTNAME=^7Pol^1ish ET ^7Legacy Public"
+      - "HOSTNAME=^7Pol^1ish ET ^7Legacy Public hosted in .de"
     volumes:
       - ./maps:/maps
       - ./homepath:/legacy/homepath:rw
