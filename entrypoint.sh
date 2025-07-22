@@ -136,13 +136,13 @@ copy_game_assets() {
         safe_copy "$campaignscript" "${ETMAIN_DIR}/scripts/"
     done
 
-    # Handle zz_polishcamp.pk3
-    if [ -f "${SETTINGS_BASE}/zz_polishcamp.pk3" ]; then
-        log_info "Copying from ${SETTINGS_BASE}/zz_polishcamp.pk3 to ${ETMAIN_DIR}/ and ${LEGACY_DIR}/"
-        cp "${SETTINGS_BASE}/zz_polishcamp.pk3" "${ETMAIN_DIR}/"
-        cp "${SETTINGS_BASE}/zz_polishcamp.pk3" "${LEGACY_DIR}/"
+    # Handle all .pk3 files
+    if ls "${SETTINGS_BASE}"/*.pk3 >/dev/null 2>&1; then
+        log_info "Copying all .pk3 files from ${SETTINGS_BASE}/ to ${ETMAIN_DIR}/ and ${LEGACY_DIR}/"
+        cp "${SETTINGS_BASE}"/*.pk3 "${ETMAIN_DIR}/"
+        cp "${SETTINGS_BASE}"/*.pk3 "${LEGACY_DIR}/"
     else
-        log_info "ERROR: ${SETTINGS_BASE}/zz_polishcamp.pk3 does not exist!"
+        log_info "ERROR: No .pk3 files found in ${SETTINGS_BASE}/!"
         exit 1
     fi
 
