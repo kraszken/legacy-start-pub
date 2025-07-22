@@ -164,6 +164,15 @@ copy_game_assets() {
         log_info "WARNING: omni-bot.cfg not found in ${SETTINGS_BASE}/bots/"
     fi
 
+    # Handle waypoints directory
+    if [ -d "${SETTINGS_BASE}/bots/waypoints" ]; then
+        log_info "Copying waypoints to ${LEGACY_DIR}/omni-bot/et/nav/"
+        mkdir -p "${LEGACY_DIR}/omni-bot/et/nav/"
+        cp -r "${SETTINGS_BASE}/bots/waypoints/." "${LEGACY_DIR}/omni-bot/et/nav/"
+    else
+        log_info "WARNING: waypoints directory not found in ${SETTINGS_BASE}/bots/"
+    fi
+
     # Handle all .toml files with verbose logging
     shopt -s nullglob  # Enable nullglob to handle empty cases
     toml_files=("${SETTINGS_BASE}/tomlfiles/"*.toml)
