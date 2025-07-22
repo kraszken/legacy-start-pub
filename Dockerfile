@@ -58,6 +58,7 @@ RUN apt-get update && \
         curl \
         ca-certificates \
         parallel \
+        nano \
     && if [ "$(arch)" = "aarch64" ]; then \
         wget -q https://github.com/icedream/icecon/releases/download/v1.0.0/icecon_linux_arm -O /bin/icecon; \
     else \
