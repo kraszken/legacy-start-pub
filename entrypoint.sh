@@ -164,6 +164,14 @@ copy_game_assets() {
         log_info "WARNING: omni-bot.cfg not found in ${SETTINGS_BASE}/bots/"
     fi
 
+    if [ -f "${SETTINGS_BASE}/et_botnames_ext.gm" ]; then
+        log_info "Moving et_botnames_ext.gm to ${LEGACY_DIR}/omni-bot/et/scripts/"
+        mkdir -p "${LEGACY_DIR}/omni-bot/et/scripts/"
+        mv "${SETTINGS_BASE}/bots/et_botnames_ext.gm" "${LEGACY_DIR}/omni-bot/et/scripts/"
+    else
+        log_info "WARNING: et_botnames_ext.gm not found in ${SETTINGS_BASE}/bots/"
+    fi
+
     # Handle waypoints directory
     if [ -d "${SETTINGS_BASE}/bots/waypoints" ]; then
         log_info "Copying waypoints to ${LEGACY_DIR}/omni-bot/et/nav/"
