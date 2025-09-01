@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Find the active UDP port's hex code in range 27960-27970
 # awk extracts the hex code, and the shell converts it to decimal. This is more robust.
