@@ -1,13 +1,16 @@
 #!/bin/sh
 
-# Find the active UDP port in range 27960-27970 using /proc/net/udp
-# Convert port range to hex for matching
-active_port=$(cat /proc/net/udp | awk '$2 ~ /:6D38|:6D39|:6D3A|:6D3B|:6D3C|:6D3D|:6D3E|:6D3F|:6D40|:6D41|:6D42/ {split($2,a,":"); printf("%d\n", "0x" a[2])}' | head -1)
+# Find the active UDP port's hex code in range 27960-27970
+# awk extracts the hex code, and the shell converts it to decimal. This is more robust.
+hex_port=$(cat /proc/net/udp | awk '$2 ~ /:6D3[8-9A-F]|:6D4[0-2]/ {split($2,a,":"); print a[2]; exit}')
 
-if [ -z "$active_port" ]; then
+if [ -z "$hex_port" ]; then
     echo "No active UDP port found in range 27960-27970. Exiting."
     exit 1
 fi
+
+# Convert hex port to decimal using the shell
+active_port=$((16#$hex_port))
 
 echo "Found active port: $active_port"
 
@@ -29,7 +32,7 @@ if [ "$player_count" -le 9 ]; then
     # Issue the RCON command to quit the server using the found port
     timeout 5 icecon "localhost:$active_port" "${RCONPASSWORD}" -c "quit"
     exit_code=$?
-    
+
     if [ $exit_code -eq 0 ]; then
         echo "RCON command issued successfully."
         exit 0
