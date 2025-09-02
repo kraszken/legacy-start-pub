@@ -7,6 +7,7 @@ RUN apt-get update && \
         git \
         unzip \
         ca-certificates \
+        lua-sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
 # Second layer: ET base files
