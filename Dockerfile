@@ -7,8 +7,14 @@ RUN apt-get update && \
         git \
         unzip \
         ca-certificates \
-        lua-sqlite3 \
+        lua5.3 \
+        luarocks \
+        build-essential \
+        libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
+
+RUN luarocks install luasql-sqlite3
+
 
 # Second layer: ET base files
 WORKDIR /legacy/server
