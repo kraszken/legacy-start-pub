@@ -213,6 +213,7 @@ update_server_config() {
     for key in "${!CONF[@]}"; do
         value=$(echo "${CONF[$key]}" | sed 's/\//\\\//g')
         sed -i "s/%CONF_${key}%/${value}/g" "${ETMAIN_DIR}/etl_server.cfg"
+        sed -i "s/%CONF_${key}%/${value}/g" "${LEGACY_DIR}/luascripts/config.toml"
     done
     
     sed -i 's/%CONF_[A-Z]*%//g' "${ETMAIN_DIR}/etl_server.cfg"
