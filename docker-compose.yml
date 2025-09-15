@@ -14,7 +14,7 @@ services:
       - ./maps:/maps
       - ./homepath:/legacy/homepath:rw
     ports:
-      - "27962:27962/udp"
+      - "27960:27960/udp"
     stdin_open: true
     tty: true
     restart: unless-stopped

@@ -78,7 +78,7 @@ VOLUME ["/legacy/homepath", "/legacy/server/etmain"]
 WORKDIR /legacy/server
 
 # Expose port and set user
-EXPOSE 27962/UDP
+EXPOSE 27960/UDP
 USER legacy
 
 # Set entrypoint

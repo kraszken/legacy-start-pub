@@ -33,7 +33,7 @@ safe_copy() {
 declare -A CONF=(
     # Server settings
     [HOSTNAME]="${HOSTNAME:-ETL Docker Server}"
-    [MAP_PORT]="${MAP_PORT:-27962}"
+    [MAP_PORT]="${MAP_PORT:-27960}"
     [REDIRECTURL]="${REDIRECTURL:-https://dl.etl.lol/maps/et}"
     [MAXCLIENTS]="${MAXCLIENTS:-32}"
     [STARTMAP]="${STARTMAP:-radar}"
