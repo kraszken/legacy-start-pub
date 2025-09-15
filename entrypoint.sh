@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# --- START DEBUGGING ---
+echo "================================================="
+echo "====== ROZPOCZĘCIE SKRYPTU entrypoint.sh ======"
+echo "================================================="
+# --- END DEBUGGING ---
+
 # Base directories
 GAME_BASE="/legacy/server"
 SETTINGS_BASE="${GAME_BASE}/settings"
@@ -57,10 +63,14 @@ declare -A CONF=(
     [SETTINGSPAT]="${SETTINGSPAT:-}"
     [SETTINGSBRANCH]="${SETTINGSBRANCH:-main}"
 
-
     # extra assets settings
     [ASSETS]="${ASSETS:-false}"
     [ASSETS_URL]="${ASSETS_URL:-}"
+
+    # --- DEBUGGING: Add keys from toml that need replacement ---
+    [STATS_API_TOKEN]="${STATS_API_TOKEN:-}"
+    [STATS_API_URL_MATCHID]="${STATS_API_URL_MATCHID:-}"
+    [STATS_API_URL_SUBMIT]="${STATS_API_URL_SUBMIT:-}"
 )
 
 # Fetch configs from repo
@@ -200,23 +210,60 @@ copy_game_assets() {
         log_info "WARNING: No .toml files found in ${SETTINGS_BASE}/"
     fi
     shopt -u nullglob  # Disable nullglob
-
 }
+
 
 # Update server.cfg with CONF vars
 update_server_config() {
     cp "${SETTINGS_BASE}/etl_server.cfg" "${ETMAIN_DIR}/etl_server.cfg"
-    
     [ -n "${CONF[PASSWORD]}" ] && echo 'set g_needpass "1"' >> "${ETMAIN_DIR}/etl_server.cfg"
+
+    # --- START DEBUGGING ---
+    echo ""
+    echo "--- ROZPOCZĘCIE ZASTĘPOWANIA ZMIENNYCH ---"
+    
+    # --- Check for the problematic variable specifically ---
+    if [ -n "${CONF[STATS_API_TOKEN]}" ]; then
+        echo "[DEBUG] Zmienna STATS_API_TOKEN znaleziona, wartość: '${CONF[STATS_API_TOKEN]}'"
+    else
+        echo "[DEBUG] UWAGA: Zmienna STATS_API_TOKEN jest PUSTA lub NIEUSTAWIONA!"
+    fi
+    echo "--- Ścieżka do pliku config.toml: ${LEGACY_DIR}/luascripts/config.toml ---"
+    
+    # --- Check the file BEFORE modification ---
+    echo "--> Sprawdzanie pliku config.toml PRZED modyfikacją:"
+    if [ -f "${LEGACY_DIR}/luascripts/config.toml" ]; then
+        ls -l "${LEGACY_DIR}/luascripts/config.toml"
+        grep "api_token" "${LEGACY_DIR}/luascripts/config.toml"
+    else
+        echo "--> BŁĄD: Plik config.toml NIE ISTNIEJE w oczekiwanej lokalizacji!"
+    fi
+    # --- END DEBUGGING ---
 
     # Replace all configuration placeholders
     for key in "${!CONF[@]}"; do
-        value=$(echo "${CONF[$key]}" | sed 's/\//\\\//g')
-        sed -i "s/%CONF_${key}%/${value}/g" "${ETMAIN_DIR}/etl_server.cfg"
-        sed -i "s/%CONF_${key}%/${value}/g" "${LEGACY_DIR}/luascripts/config.toml"
+        # Use a different delimiter for sed to avoid issues with slashes in URLs
+        value=$(echo "${CONF[$key]}" | sed 's:/:\\/:g')
+        sed -i "s:%CONF_${key}%:${value}:g" "${ETMAIN_DIR}/etl_server.cfg"
+        # Also process the toml file if it exists
+        if [ -f "${LEGACY_DIR}/luascripts/config.toml" ]; then
+            sed -i "s:%CONF_${key}%:${value}:g" "${LEGACY_DIR}/luascripts/config.toml"
+        fi
     done
+
+    # --- START DEBUGGING ---
+    # --- Check the file AFTER modification ---
+    echo "--> Sprawdzanie pliku config.toml PO modyfikacji:"
+    if [ -f "${LEGACY_DIR}/luascripts/config.toml" ]; then
+        grep "api_token" "${LEGACY_DIR}/luascripts/config.toml"
+    else
+        echo "--> BŁĄD: Plik config.toml nadal nie istnieje."
+    fi
+    echo "--- ZAKOŃCZONO ZASTĘPOWANIE ZMIENNYCH ---"
+    echo ""
+    # --- END DEBUGGING ---
     
-    sed -i 's/%CONF_[A-Z]*%//g' "${ETMAIN_DIR}/etl_server.cfg"
+    sed -i 's/%CONF_[A-Z_]*%//g' "${ETMAIN_DIR}/etl_server.cfg"
     
     # Handle MOTD configuration if set
     if [ -n "${CONF[MOTD]:-}" ]; then
@@ -258,8 +305,6 @@ handle_extra_content() {
         { log_warning "Failed to download assets"; return 1; }
 }
 
-
-
 # Parse additional CLI arguments
 parse_cli_args() {
     local args=()
@@ -281,6 +326,14 @@ update_server_config
 handle_extra_content
 
 ADDITIONAL_ARGS=($(parse_cli_args))
+
+# --- START DEBUGGING ---
+echo ""
+echo "================================================="
+echo "====== Zakończono konfigurację, za 5s start serwera ======"
+echo "================================================="
+sleep 5
+# --- END DEBUGGING ---
 
 # Start the game server
 exec "${GAME_BASE}/etlded" \
