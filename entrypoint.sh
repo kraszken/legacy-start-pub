@@ -222,7 +222,6 @@ update_server_config() {
     echo ""
     echo "--- ROZPOCZĘCIE ZASTĘPOWANIA ZMIENNYCH ---"
     
-    # --- Check for the problematic variable specifically ---
     if [ -n "${CONF[STATS_API_TOKEN]}" ]; then
         echo "[DEBUG] Zmienna STATS_API_TOKEN znaleziona, wartość: '${CONF[STATS_API_TOKEN]}'"
     else
@@ -230,7 +229,6 @@ update_server_config() {
     fi
     echo "--- Ścieżka do pliku config.toml: ${LEGACY_DIR}/luascripts/config.toml ---"
     
-    # --- Check the file BEFORE modification ---
     echo "--> Sprawdzanie pliku config.toml PRZED modyfikacją:"
     if [ -f "${LEGACY_DIR}/luascripts/config.toml" ]; then
         ls -l "${LEGACY_DIR}/luascripts/config.toml"
@@ -242,20 +240,22 @@ update_server_config() {
 
     # Replace all configuration placeholders
     for key in "${!CONF[@]}"; do
-        # Use a different delimiter for sed to avoid issues with slashes in URLs
-        value=$(echo "${CONF[$key]}" | sed 's:/:\\/:g')
-        sed -i "s:%CONF_${key}%:${value}:g" "${ETMAIN_DIR}/etl_server.cfg"
-        # Also process the toml file if it exists
+        # Escape backslashes for sed
+        value=$(echo "${CONF[$key]}" | sed 's/\\/\\\\/g')
+        
+        # Use '#' as a separator to avoid conflicts with '/' in URLs
+        # This is the corrected part
+        sed -i "s#%CONF_${key}%#${value}#g" "${ETMAIN_DIR}/etl_server.cfg"
         if [ -f "${LEGACY_DIR}/luascripts/config.toml" ]; then
-            sed -i "s:%CONF_${key}%:${value}:g" "${LEGACY_DIR}/luascripts/config.toml"
+            sed -i "s#%CONF_${key}%#${value}#g" "${LEGACY_DIR}/luascripts/config.toml"
         fi
     done
 
     # --- START DEBUGGING ---
-    # --- Check the file AFTER modification ---
     echo "--> Sprawdzanie pliku config.toml PO modyfikacji:"
     if [ -f "${LEGACY_DIR}/luascripts/config.toml" ]; then
         grep "api_token" "${LEGACY_DIR}/luascripts/config.toml"
+        grep "api_url_matchid" "${LEGACY_DIR}/luascripts/config.toml"
     else
         echo "--> BŁĄD: Plik config.toml nadal nie istnieje."
     fi
@@ -263,33 +263,23 @@ update_server_config() {
     echo ""
     # --- END DEBUGGING ---
     
+    # Remove any remaining placeholders
     sed -i 's/%CONF_[A-Z_]*%//g' "${ETMAIN_DIR}/etl_server.cfg"
     
     # Handle MOTD configuration if set
     if [ -n "${CONF[MOTD]:-}" ]; then
-        # Remove any existing server_motd lines to prevent duplicates
         sed -i '/^set server_motd[0-9]/d' "${ETMAIN_DIR}/etl_server.cfg"
-        
-        # Create a temporary file for MOTD lines
         local temp_motd=$(mktemp)
-        
-        # Convert the MOTD string into lines and write to temp file
         local line_num=0
         while IFS= read -r line || [ -n "$line" ]; do 
             echo "set server_motd${line_num}          \"${line}\"" >> "$temp_motd"
             ((line_num++))
         done < <(echo -e "${CONF[MOTD]}" | sed 's/\\n/\n/g')
-        
-        # Fill remaining slots with empty strings
         while [ $line_num -lt 6 ]; do
             echo "set server_motd${line_num}          \"\"" >> "$temp_motd"
             ((line_num++))
         done
-        
-        # Insert the MOTD lines after sv_hostname
         sed -i '/^set sv_hostname/r '"$temp_motd" "${ETMAIN_DIR}/etl_server.cfg"
-        
-        # Clean up
         rm "$temp_motd"
     fi
     
