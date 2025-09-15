@@ -22,10 +22,10 @@ RUN mkdir -p etmain/mapscripts && \
     rm -rf /tmp/et_full.zip /tmp/et260b.x86_keygen_V03.run /tmp/etmain
 
 # Config files
-RUN mkdir -p /legacy/homepath && \
-    git clone --depth 1 --single-branch "https://github.com/kraszken/legacy-config-pub.git" /tmp/legacy-config && \
-    cp -rT /tmp/legacy-config /legacy/server/etmain && \
-    rm -rf /tmp/legacy-config
+# RUN mkdir -p /legacy/homepath && \
+#     git clone --depth 1 --single-branch "https://github.com/kraszken/legacy-config-pub.git" /tmp/legacy-config && \
+#     cp -rT /tmp/legacy-config /legacy/server/etmain && \
+#     rm -rf /tmp/legacy-config
 
 
 # ET Legacy files
